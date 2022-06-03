@@ -10,14 +10,6 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>iprc-framework-core</artifactId>
 
-    <dependencies>
-        <dependency>
-            <groupId>org.example</groupId>
-            <artifactId>iprc-framework-interface</artifactId>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
-
-    </dependencies>
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
