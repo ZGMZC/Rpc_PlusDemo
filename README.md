@@ -1,15 +1,15 @@
-### Rpc_PlusDemp
+### Rpc_PlusDemo
 从0到1动手实现RPC框架
 
 > 不同的分支代表不同的进度
 
 
 - CAUTION！！！ 
-> master 无代码，仅仅是简单介绍
+> master 无代码实现，仅仅是简单介绍
 > 
 > V1.0 简单的Client和Server端
 > 
-> V2.0 进行改良优化注册信息等
+> V2.0 代理层的实现
 > 
 > V3.0 ...
 > 
