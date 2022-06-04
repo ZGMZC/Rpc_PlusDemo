@@ -34,23 +34,33 @@ public class ServerApplication {
                 .option(ChannelOption.SO_SNDBUF, 16 * 1024)
                 .option(ChannelOption.SO_RCVBUF, 16 * 1024)
                 .option(ChannelOption.SO_KEEPALIVE, true);
-        serverBootstrap.childHandler(new ChannelInitializer() {
+        serverBootstrap.childHandler(new ChannelInitializer<NioSocketChannel>() {
             @Override
-            protected void initChannel(Channel ch) throws Exception {
+            protected void initChannel(NioSocketChannel ch) throws Exception {
                 System.out.println("初始化netty信息通道");
                 ch.pipeline().addLast(new ObjectDecoder(1024 * 1024, ClassResolvers.weakCachingConcurrentResolver(this.getClass().getClassLoader())));
                 ch.pipeline().addLast(new ObjectEncoder());
+                ch.pipeline().addLast(new SimpleChannelInboundHandler<Object>(){
+                    @Override
+                    protected void channelRead0(ChannelHandlerContext channelHandlerContext, Object s) throws Exception {
+                        System.out.println("收到数据");
+                        System.out.println(s);
+                        Thread.sleep(1000);
+                    }
 
+                });
             }
         });
+        //绑定并监听端口
         ChannelFuture channelFuture = serverBootstrap.bind(9090).sync();
+        //如果没有客户端连接，就会关闭Channel和两个线程池
         channelFuture.channel().closeFuture().sync();
         serverGroup.shutdownGracefully();
         clientGroup.shutdownGracefully();
-
     }
 
     public static void main(String[] args) throws InterruptedException {
+//        ServerApplication.start();
         ServerBootstrap serverBootstrap = new ServerBootstrap();
         NioEventLoopGroup boss = new NioEventLoopGroup();
         NioEventLoopGroup worker = new NioEventLoopGroup();

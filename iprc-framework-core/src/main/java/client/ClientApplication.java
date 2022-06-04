@@ -39,7 +39,7 @@ public class ClientApplication {
         Channel channel = bootstrap.connect("localhost",9090).channel();
         while (true){
             System.out.println("发送数据");
-            channel.writeAndFlush("sdasd");
+            channel.writeAndFlush("123");
             sleep(1000);
         }
     }
@@ -48,6 +48,7 @@ public class ClientApplication {
         bootstrap.handler(new ChannelInitializer<SocketChannel>() {
             @Override
             protected void initChannel(SocketChannel ch) throws Exception {
+                ch.pipeline().addLast(new StringEncoder());
                 ch.pipeline().addLast(new ClientHandler());
             }
         });
