@@ -28,7 +28,7 @@
   -byteBuf.writeInt(rpcProtocol.getContentLength()):写入协议传输核心数据的长度
   -byteBuf.writeBytes(rpcProtocol.getContent()):写入协议传输核心数据
 - RpcDecoder:反序列化
-- 
+
 ##### Client
 调用流程：客户端首先需要通过一个代理工厂获取被调用对象的代理对象，然后通过代理对象将数据放入发送队列，最后会有一个异步线程将发送队列内部的数据一个个地发送给到服务端，并且等待服务端响应对应的数据结果。
 - startClientApplication():客户端的启动
