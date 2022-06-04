@@ -9,10 +9,14 @@ import java.util.List;
 import static common.constants.RpcConstants.MAGIC_NUMBER;
 
 public class RpcDecoder extends ByteToMessageDecoder {
+    /**
+     * 协议的开头部分的标准长度
+     */
     public final int BASE_LENGTH=2+4;
     @Override
     protected void decode(ChannelHandlerContext channelHandlerContext, ByteBuf byteBuf, List<Object> list) throws Exception {
         if(byteBuf.readableBytes()>= BASE_LENGTH){
+            //防止收到一些体积过大的数据包
             if(byteBuf.readableBytes()>1000){
                 byteBuf.skipBytes(byteBuf.readableBytes());
             }
@@ -20,6 +24,7 @@ public class RpcDecoder extends ByteToMessageDecoder {
             while (true){
                 beginReader=byteBuf.readerIndex();
                 byteBuf.markReaderIndex();
+                //这里对应了RpcProtocol的魔数
                 if (byteBuf.readShort() == MAGIC_NUMBER) {
                     break;
                 } else {
@@ -28,6 +33,7 @@ public class RpcDecoder extends ByteToMessageDecoder {
                     return;
                 }
             }
+            //这里对应了RpcProtocol对象的contentLength字段
             int length = byteBuf.readInt();
             //说明剩余的数据包不是完整的，这里需要重置下读索引
             if (byteBuf.readableBytes() < length) {

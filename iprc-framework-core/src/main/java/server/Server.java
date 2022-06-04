@@ -41,25 +41,28 @@ public class Server {
         bootstrap.childHandler(new ChannelInitializer<SocketChannel>() {
             @Override
             protected void initChannel(SocketChannel socketChannel) throws Exception {
-                System.out.println("初始化provider过程");
+                System.out.println("初始化Server...");
                 socketChannel.pipeline().addLast(new RpcEncoder());
+                System.out.println("加入编码器...");
                 socketChannel.pipeline().addLast(new RpcDecoder());
+                System.out.println("加入译码器...");
                 socketChannel.pipeline().addLast(new ServerHandler());
+                System.out.println("加入服务端处理器...");
             }
         });
         bootstrap.bind(serverConfig.getPort()).sync();
+        System.out.println("开始绑定端口，进行监听和工作...");
     }
+    //注册中心，将服务注册到注册中心，简单测试
     public void registyService(Object serviceBean){
         if(serviceBean.getClass().getInterfaces().length==0){
             throw new RuntimeException("service must had interfaces!");
         }
         Class[] classes = serviceBean.getClass().getInterfaces();
-        if(classes.length>1){
-            throw new RuntimeException("service must only had one interfaces!");
-        }
-        Class interfaceClass = classes[0];
         //需要注册的对象统一放在一个MAP集合中进行管理
-        PROVIDER_CLASS_MAP.put(interfaceClass.getName(), serviceBean);
+        for(Class c:classes){
+            PROVIDER_CLASS_MAP.put(c.getName(), serviceBean);
+        }
     }
 
     public static void main(String[] args) throws InterruptedException {

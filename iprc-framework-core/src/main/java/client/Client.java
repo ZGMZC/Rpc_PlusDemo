@@ -21,10 +21,7 @@ import proxy.JDK.JDKProxyFactory;
 import static common.cache.CommonClientCache.SEND_QUEUE;
 
 public class Client {
-    private Logger logger=LoggerFactory.getLogger(Client.class);
-    private static EventLoopGroup clientGroup=new NioEventLoopGroup();
     private ClientConfig clientConfig;
-
     public ClientConfig getClientConfig() {
         return clientConfig;
     }
@@ -41,16 +38,19 @@ public class Client {
             @Override
             protected void initChannel(SocketChannel ch) throws Exception {
                 //管道中初始化一些逻辑，这里包含了上边所说的编解码器和客户端响应类
+                System.out.println("初始化Client...");
                 ch.pipeline().addLast(new RpcEncoder());
+                System.out.println("加入编码器...");
                 ch.pipeline().addLast(new RpcDecoder());
+                System.out.println("加入译码器...");
                 ch.pipeline().addLast(new ClientHandler());
+                System.out.println("加入客户端处理器...");
             }
         });
         //常规的链接netty服务端
         ChannelFuture channelFuture = bootstrap.connect(clientConfig.getServerAddr(), clientConfig.getPort()).sync();
-        logger.info("============ 服务启动 ============");
         this.startClient(channelFuture);
-        //这里注入了一个代理工厂，这个代理类在下文会仔细介绍
+        //这里注入了一个代理工厂
         RpcReference rpcReference = new RpcReference(new JDKProxyFactory());
         return rpcReference;
     }
@@ -72,10 +72,9 @@ public class Client {
                 try {
                     //阻塞模式
                     RpcInvocation data = SEND_QUEUE.take();
-                    //将RpcInvocation封装到RpcProtocol对象中，然后发送给服务端，这里正好对应了上文中的ServerHandler
+                    //将RpcInvocation封装到RpcProtocol对象中，然后发送给服务端，这里正好对应了Server端的ServerHandler
                     String json = JSON.toJSONString(data);
                     RpcProtocol rpcProtocol = new RpcProtocol(json.getBytes());
-
                     //netty的通道负责发送数据给服务端
                     channelFuture.channel().writeAndFlush(rpcProtocol);
                 } catch (InterruptedException e) {
@@ -94,8 +93,10 @@ public class Client {
         RpcReference rpcReference = client.startClientApplication();
         DataService dataService = rpcReference.get(DataService.class);
         for(int i=0;i<100;i++){
-            String result = dataService.sendData("test");
-            System.out.println(result);
+            System.out.println("发送数据："+i+"+"+i);
+            int res=dataService.sum(i,i);
+            System.out.println(res);
+            Thread.sleep(1000);
         }
     }
 }

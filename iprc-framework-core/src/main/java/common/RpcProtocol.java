@@ -9,6 +9,7 @@ public class RpcProtocol implements Serializable {
     private static final long serialVersionUID=5359096060555795690L;
     private short magicNumber =MAGIC_NUMBER;
     private int contentLength;
+    //这个字段其实是RpcInvocation类的字节数组，在RpcInvocation中包含了更多的调用信息。
     private byte[] content;
     public RpcProtocol(byte[] content){
         this.contentLength=content.length;

@@ -3,6 +3,7 @@ package client;
 import proxy.ProxyFactory;
 
 public class RpcReference {
+
     public ProxyFactory proxyFactory;
 
     public RpcReference(ProxyFactory proxyFactory) {

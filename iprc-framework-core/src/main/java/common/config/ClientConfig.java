@@ -1,7 +1,9 @@
 package common.config;
 
 public class ClientConfig {
+    //端口
     private Integer port;
+    //服务地址
     private String serverAddr;
 
     public Integer getPort() {
