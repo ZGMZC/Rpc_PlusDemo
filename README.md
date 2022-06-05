@@ -7,45 +7,29 @@
 - Maven 3.5+
 #### 本分支所实现的内容
 
-- 基于Netty搭建了一个简单的服务端和客户端通信模型。
-- 通过自定义协议提RpcProtocol的方式来解决网络粘包和拆包的问题。
-- 封装了统一的代理接口，合理引入了JDK代理来实现网络传输的功能。
-- 客户端通过队列消费的异步设计来实现消息发送，通过uuid来标示请求线程和响应线程之间的数据匹配问题。
+- 基于Zookeeper作为注册中心进行了统一的访问接口封装与实现，并且能够支持日后其它注册中心的拓展。
+- 当服务提供方发生变更的时候，借助注册中心通知到客户端做本地调用表的一个更新操作。
+- 当服务订阅的时候需要告知注册中心修改节点数据，方便日后针对调用者做一些数据统计与监控的功能。
+- 统一将节点的更新后的相关操作通过事件的机制来实现代码解耦。
+- 将项目中常用的一些缓存数据按照服务端和客户端两类角色进行分开管理。
+- 将对于Netty连接的管理操作统一封装在ConnectionHandler类中，以及将之前硬编码的配置信息都迁移到了properties配置文件中，并设计了PropertiesBootst rap类进行管理。
 
-##### 协议
-- RpcProtol
-  - magicNumber：魔法数，主要是在做服务通讯的时候定义的一个安全检测，确认当前请求的协议是否合法。
-  - contentLength：协议传输核心数据的长度。这里将长度单独拎出来设置有个好处，当服务端的接收能力有限，可以对该字段进行赋值。当读取到的网络数据包中的contentLength字段已经超过预期值的话，就不会去读取content字段。
-  - content：核心的传输数据，这里核心的传输数据主要是请求的服务名称，请求服务的方法名称，请求参数内容。为了方便后期扩展，这些核心的请求数据我都统一封装到了RpcInvocation对象当中。
-- RpcInvocation
-  - targetMethod：请求的目标方法，相当于方法名
-  - targetServiceName：请求的目标服务名称，相当于类名
-  - args：请求参数信息
-  - uuid：用于匹配请求和响应的一个关键值。当请求从客户端发出的时候，会有一个uuid用于记录发出的请求，待数据返回的时候通过uuid来匹配对应的请求线程，并且返回给调用线程
-  - response：接口响应的数据塞入这个字段中（如果是异步调用或者void类型，这里就为空）
-- RpcEncoder:序列化
-  -byteBuf.writeShort(rpcProtocol.getMagicNumber()):写入魔法数
-  -byteBuf.writeInt(rpcProtocol.getContentLength()):写入协议传输核心数据的长度
-  -byteBuf.writeBytes(rpcProtocol.getContent()):写入协议传输核心数据
-- RpcDecoder:反序列化
-- 
-##### Client
-调用流程：客户端首先需要通过一个代理工厂获取被调用对象的代理对象，然后通过代理对象将数据放入发送队列，最后会有一个异步线程将发送队列内部的数据一个个地发送给到服务端，并且等待服务端响应对应的数据结果。
-- startClientApplication():客户端的启动
-  - client的简单通信模型
-  - startClient(channelFuture)：队列消费的异步设计
-  - rpcReference代理工厂：根据接口类型获取代理对象
-    - JDKProxyFactory：代理工厂，内部是JDKClientInvocationHandler
-    - JDKClientInvocationHandler：需要调用的方法名称、服务名称，参数统统都封装好到RpcInvocation当中，然后塞入到一个队列里，并且等待服务端的数据返回
-    > 流程：rpcReference调用get(class)方法，内部使用了JDKProxyFactory的getClass(class)方法，其内部又调用了JDKClientInvocationHandler(class)方法，在JDKClientInvocationHandler内部将方法接口进行了封装并加入到队列中。
-##### Server
-- startApplication():服务端的启动
-  - server的简单通信模型
-- registyService(Object serviceBean):注册中心，将注册的对象统一放在一个MAP集合中进行管理
+#### 注册中心的接入与实现
+完成代理层的开发后，有几个问题需要我们去思考：
+- 如果同一个服务有10台不同的机器进行提供，那么客户端该从哪获取这10台目标机器的ip地址信息呢？
+- 随着调用方的增加，如何对服务调用者的数据进行监控呢？
+- 服务提供者下线了，该如何通知到服务调用方？
 
+> 为了解决以上的问题，如果单纯靠代理方来进行技术实现的话，那么代理方需要考虑如何通知到所有服务提供者，以及如何让服务提供者在下线之前主动通知到自己。
+> 这个时候单纯依靠代理层来进行技术实现已经不太合适，需要通过一个第三者来做这件通知的工作。
 
-
-
+> 在框架中引入了叫注册中心层的概念
+> - 能够存储数据，并且具备高可用功能。
+> - 能够和各个调用方保持连接，当有服务上线、下线的时候需要通知到各个端。
+> 这里选择了Zookeeper作为注册中心
+> - Zookeeper和客户端之间能够构成主动推送，能够实现服务上线和下线的通知效果。 
+> - Zookeeper自身提供了高可用的机制，并且对于数据节点的存储可以支持顺序、非顺序、临时、持久化的特性。
+> - Zookeeper自身也是一款非常成熟的中间件，业界有很多关于它的解决方案，开源社区也比较活跃。
 
 
 

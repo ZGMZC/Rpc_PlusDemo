@@ -1,24 +1,33 @@
 package common.config;
 
 public class ClientConfig {
-    //端口
-    private Integer port;
-    //服务地址
-    private String serverAddr;
+    private String applicationName;
 
-    public Integer getPort() {
-        return port;
+    private String registerAddr;
+
+    private String proxyType;
+
+    public String getProxyType() {
+        return proxyType;
     }
 
-    public void setPort(Integer port) {
-        this.port = port;
+    public void setProxyType(String proxyType) {
+        this.proxyType = proxyType;
     }
 
-    public String getServerAddr() {
-        return serverAddr;
+    public String getRegisterAddr() {
+        return registerAddr;
     }
 
-    public void setServerAddr(String serverAddr) {
-        this.serverAddr = serverAddr;
+    public void setRegisterAddr(String registerAddr) {
+        this.registerAddr = registerAddr;
+    }
+
+    public String getApplicationName() {
+        return applicationName;
+    }
+
+    public void setApplicationName(String applicationName) {
+        this.applicationName = applicationName;
     }
 }

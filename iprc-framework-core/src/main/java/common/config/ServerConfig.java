@@ -2,13 +2,34 @@ package common.config;
 
 
 public class ServerConfig {
-    //设置端口号
-    private Integer port;
-    public Integer getPort(){
-        return port;
-    }
-    public void setPort(Integer port){
-        this.port=port;
+
+    private Integer serverPort;
+
+    private String registerAddr;
+
+    private String applicationName;
+
+    public String getRegisterAddr() {
+        return registerAddr;
     }
 
+    public void setRegisterAddr(String registerAddr) {
+        this.registerAddr = registerAddr;
+    }
+
+    public Integer getServerPort() {
+        return serverPort;
+    }
+
+    public void setServerPort(Integer serverPort) {
+        this.serverPort = serverPort;
+    }
+
+    public String getApplicationName() {
+        return applicationName;
+    }
+
+    public void setApplicationName(String applicationName) {
+        this.applicationName = applicationName;
+    }
 }
