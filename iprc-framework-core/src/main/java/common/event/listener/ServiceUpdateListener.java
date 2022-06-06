@@ -23,7 +23,7 @@ public class ServiceUpdateListener implements IRpcListener<IRpcUpdateEvent> {
 
     @Override
     public void callBack(Object t) {
-        //获取到字节点的数据信息
+        //获取到子节点的数据信息
         URLChangeWrapper urlChangeWrapper = (URLChangeWrapper) t;
         List<ChannelFutureWrapper> channelFutureWrappers = CONNECT_MAP.get(urlChangeWrapper.getServiceName());
         if (CommonUtils.isEmptyList(channelFutureWrappers)) {

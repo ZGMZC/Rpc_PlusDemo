@@ -75,13 +75,9 @@ public class Server {
             throw new RuntimeException("service must had interfaces!");
         }
         Class[] classes = serviceBean.getClass().getInterfaces();
-        if (classes.length > 1) {
-            throw new RuntimeException("service must only had one interfaces!");
-        }
         if (registryService == null) {
             registryService = new ZookeeperRegister(serverConfig.getRegisterAddr());
         }
-        //默认选择该对象的第一个实现接口
         for(Class interfaceClass:classes){
             PROVIDER_CLASS_MAP.put(interfaceClass.getName(), serviceBean);
             URL url = new URL();

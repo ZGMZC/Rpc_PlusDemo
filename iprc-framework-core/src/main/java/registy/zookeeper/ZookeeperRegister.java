@@ -107,7 +107,7 @@ public class ZookeeperRegister extends AbstractRegister implements RegistryServi
     }
 
     public static void main(String[] args) throws InterruptedException {
-        /*测试是否能够连接到zookeeper*/
+        /*测试是否能够连接到zookeeper并注册服务*/
         ZookeeperRegister zookeeperRegister = new ZookeeperRegister("192.168.226.129:2181");
         zookeeperRegister.register(new URL());
         List<String> urls = zookeeperRegister.getProviderIps(DataService.class.getName());
