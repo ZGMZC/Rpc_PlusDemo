@@ -14,8 +14,6 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import proxy.JDK.JDKProxyFactory;
 
 import static common.cache.CommonClientCache.SEND_QUEUE;
@@ -49,7 +47,7 @@ public class Client {
         });
         //常规的链接netty服务端
         ChannelFuture channelFuture = bootstrap.connect(clientConfig.getServerAddr(), clientConfig.getPort()).sync();
-        this.startClient(channelFuture);
+        startClient(channelFuture);
         //这里注入了一个代理工厂
         RpcReference rpcReference = new RpcReference(new JDKProxyFactory());
         return rpcReference;
@@ -61,11 +59,9 @@ public class Client {
 
     class AsyncSendJob implements Runnable{
         private ChannelFuture channelFuture;
-
         public AsyncSendJob(ChannelFuture channelFuture) {
             this.channelFuture = channelFuture;
         }
-
         @Override
         public void run() {
             while (true) {
