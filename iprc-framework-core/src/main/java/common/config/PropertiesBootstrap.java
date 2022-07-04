@@ -9,7 +9,6 @@ public class PropertiesBootstrap {
     public static final String SERVER_PORT = "irpc.serverPort";
     public static final String REGISTER_ADDRESS = "irpc.registerAddr";
     public static final String APPLICATION_NAME = "irpc.applicationName";
-    public static final String PROXY_TYPE = "irpc.proxyType";
 
     public static ServerConfig loadServerConfigFromLocal() {
         try {
@@ -33,7 +32,6 @@ public class PropertiesBootstrap {
         ClientConfig clientConfig = new ClientConfig();
         clientConfig.setApplicationName(PropertiesLoader.getPropertiesStr(APPLICATION_NAME));
         clientConfig.setRegisterAddr(PropertiesLoader.getPropertiesStr(REGISTER_ADDRESS));
-        clientConfig.setProxyType(PropertiesLoader.getPropertiesStr(PROXY_TYPE));
         return clientConfig;
     }
 

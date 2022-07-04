@@ -24,8 +24,8 @@ import static common.cache.CommonServerCache.PROVIDER_URL_SET;
  * @Date created in 16:37 2022/6/3
  */
 public class Server {
-    private static EventLoopGroup bossGroup=null;
-    private static EventLoopGroup workerGroup=null;
+    private static EventLoopGroup bossGroup;
+    private static EventLoopGroup workerGroup;
     private ServerConfig serverConfig;
     private RegistryService registryService;
     public ServerConfig getServerConfig(){
@@ -57,7 +57,7 @@ public class Server {
                 System.out.println("加入服务端处理器...");
             }
         });
-        this.batchExportUrl();
+        batchExportUrl();
         bootstrap.bind(serverConfig.getServerPort()).sync();
         System.out.println("开始绑定端口，进行监听和工作...");
     }

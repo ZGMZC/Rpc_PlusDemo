@@ -4,14 +4,14 @@ import common.ChannelFutureWrapper;
 import common.utils.CommonUtils;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
+import router.Selector;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
-import static common.cache.CommonClientCache.CONNECT_MAP;
-import static common.cache.CommonClientCache.SERVER_ADDRESS;
+import static common.cache.CommonClientCache.*;
 
 public class ConnectionHandler {
 
@@ -43,19 +43,25 @@ public class ConnectionHandler {
         String[] providerAddress = providerIp.split(":");
         String ip = providerAddress[0];
         Integer port = Integer.parseInt(providerAddress[1]);
+        Integer weight=Integer.parseInt(providerAddress[2]);
         //到底这个channelFuture里面是什么
         ChannelFuture channelFuture = bootstrap.connect(ip, port).sync();
         ChannelFutureWrapper channelFutureWrapper = new ChannelFutureWrapper();
         channelFutureWrapper.setChannelFuture(channelFuture);
         channelFutureWrapper.setHost(ip);
         channelFutureWrapper.setPort(port);
+        channelFutureWrapper.setWeight(weight);
         SERVER_ADDRESS.add(providerIp);
         List<ChannelFutureWrapper> channelFutureWrappers = CONNECT_MAP.get(providerServiceName);
         if (CommonUtils.isEmptyList(channelFutureWrappers)) {
             channelFutureWrappers = new ArrayList<>();
         }
         channelFutureWrappers.add(channelFutureWrapper);
+        //例如com.sise.test.UserService会被放入到一个Map集合中，key是服务的名字，value是对应的channel通道的List集合
         CONNECT_MAP.put(providerServiceName, channelFutureWrappers);
+        Selector selector = new Selector();
+        selector.setProviderServiceName(providerServiceName);
+        IROUTER.refreshRouterArr(selector);
     }
 
     /**
@@ -97,12 +103,13 @@ public class ConnectionHandler {
      * @return
      */
     public static ChannelFuture getChannelFuture(String providerServiceName) {
-
         List<ChannelFutureWrapper> channelFutureWrappers = CONNECT_MAP.get(providerServiceName);
         if (CommonUtils.isEmptyList(channelFutureWrappers)) {
             throw new RuntimeException("no provider exist for " + providerServiceName);
         }
-        ChannelFuture channelFuture = channelFutureWrappers.get(new Random().nextInt(channelFutureWrappers.size())).getChannelFuture();
+        Selector selector = new Selector();
+        selector.setProviderServiceName(providerServiceName);
+        ChannelFuture channelFuture = IROUTER.select(selector).getChannelFuture();
         return channelFuture;
     }
 

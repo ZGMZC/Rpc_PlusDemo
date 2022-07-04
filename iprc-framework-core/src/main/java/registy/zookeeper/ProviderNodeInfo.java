@@ -6,6 +6,25 @@ package registy.zookeeper;
 public class ProviderNodeInfo {
     private String serviceName;
     private String address;
+    private Integer weight;
+
+    private String registryTime;
+
+    public Integer getWeight() {
+        return weight;
+    }
+
+    public void setWeight(Integer weight) {
+        this.weight = weight;
+    }
+
+    public String getRegistryTime() {
+        return registryTime;
+    }
+
+    public void setRegistryTime(String registryTime) {
+        this.registryTime = registryTime;
+    }
 
     public String getServiceName() {
         return serviceName;
@@ -28,6 +47,8 @@ public class ProviderNodeInfo {
         return "ProviderNodeInfo{" +
                 "serviceName='" + serviceName + '\'' +
                 ", address='" + address + '\'' +
+                ", weight=" + weight +
+                ", registryTime='" + registryTime + '\'' +
                 '}';
     }
 }

@@ -7,6 +7,16 @@ public class ClientConfig {
 
     private String proxyType;
 
+    private String RouterStrategy;
+
+    public String getRouterStrategy() {
+        return RouterStrategy;
+    }
+
+    public void setRouterStrategy(String RouterStrategy) {
+        this.RouterStrategy = RouterStrategy;
+    }
+
     public String getProxyType() {
         return proxyType;
     }

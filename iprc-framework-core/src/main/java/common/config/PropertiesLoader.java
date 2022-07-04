@@ -14,7 +14,7 @@ public class PropertiesLoader {
 
     private static Map<String, String> propertiesMap = new HashMap<>();
 
-    private static String DEFAULT_PROPERTIES_FILE = "F:\\Code\\Java_Code\\Rpc_PlusDemo\\iprc-framework-core\\src\\main\\resources\\irpc.properties";
+    private static String DEFAULT_PROPERTIES_FILE = "iprc-framework-core/src/main/resources/irpc.properties";
 
     //todo 如果这里直接使用static修饰是否可以？
     public static void loadConfiguration() throws IOException {
@@ -22,8 +22,7 @@ public class PropertiesLoader {
             return;
         }
         properties = new Properties();
-        FileInputStream in = null;
-        in = new FileInputStream(DEFAULT_PROPERTIES_FILE);
+        FileInputStream in = new FileInputStream(DEFAULT_PROPERTIES_FILE);
         properties.load(in);
     }
 

@@ -23,11 +23,15 @@ import proxy.JDK.JDKProxyFactory;
 import registy.URL;
 import registy.zookeeper.AbstractRegister;
 import registy.zookeeper.ZookeeperRegister;
+import router.IRouter;
+import router.RandomRouterImpl;
+import router.RotateRouterImpl;
 
 import java.util.List;
 
-import static common.cache.CommonClientCache.SEND_QUEUE;
-import static common.cache.CommonClientCache.SUBSCRIBE_SERVICE_LIST;
+import static common.cache.CommonClientCache.*;
+import static common.constants.RpcConstants.RANDOM_ROUTER_TYPE;
+import static common.constants.RpcConstants.ROTATE_ROUTER_TYPE;
 
 public class Client {
     private Logger logger = LoggerFactory.getLogger(Client.class);
@@ -70,7 +74,7 @@ public class Client {
         return rpcReference;
     }
     /**
-     * 启动服务之前需要预先订阅对应的dubbo服务
+     * 启动服务之前需要预先订阅对应服务
      *
      * @param serviceBean
      */
@@ -94,7 +98,7 @@ public class Client {
                 try {
                     ConnectionHandler.connect(providerServiceName, providerIp);
                 } catch (InterruptedException e) {
-
+                    e.printStackTrace();
                 }
             }
             URL url = new URL();
@@ -113,10 +117,7 @@ public class Client {
     }
 
     class AsyncSendJob implements Runnable {
-
-        public AsyncSendJob() {
-        }
-
+        public AsyncSendJob() {}
         @Override
         public void run() {
             while (true) {
@@ -134,9 +135,23 @@ public class Client {
         }
     }
 
+    /**
+     * 路由层的初始化
+     */
+    private void initClientConfig(){
+        //初始化路由策略
+        String routerStrategy=clientConfig.getRouterStrategy();
+        if(RANDOM_ROUTER_TYPE.equals(routerStrategy)){
+            IROUTER=new RandomRouterImpl();
+        }else if(ROTATE_ROUTER_TYPE.equals(routerStrategy)){
+            IROUTER=new RotateRouterImpl();
+        }
+
+    }
     public static void main(String[] args) throws Throwable {
         Client client = new Client();
         RpcReference rpcReference = client.initClientApplication();
+        client.initClientConfig();
         DataService dataService = rpcReference.get(DataService.class);
         client.doSubscribeService(DataService.class);
         ConnectionHandler.setBootstrap(client.getBootstrap());
