@@ -22,8 +22,7 @@ public class PropertiesLoader {
             return;
         }
         properties = new Properties();
-        FileInputStream in = null;
-        in = new FileInputStream(DEFAULT_PROPERTIES_FILE);
+        FileInputStream in = new FileInputStream(DEFAULT_PROPERTIES_FILE);
         properties.load(in);
     }
 

@@ -61,7 +61,7 @@ public abstract class AbstractZookeeperClient {
      */
     public abstract String getNodeData(String path);
     /**
-     * 获取指定目录下的字节点数据
+     * 获取指定目录下的子节点数据
      * @param path
      * @return
      */
